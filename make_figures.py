@@ -21,7 +21,7 @@ CONF = pd.DataFrame({"metric": METRICS,
 
 # ---- Fig 1: stacked eta^2 by regime ----
 fig, axes = plt.subplots(1, 3, figsize=(7.0, 2.4), sharey=True)
-panels = [("R1 general QA (conference)", CONF), ("R2 technical documentation", T[T.regime == "R2_technical"]), ("R3 long legal contracts", T[T.regime == "R3_legal"])]
+panels = [("R1 general QA (conference)", CONF), ("R2 technical documentation", T[T.regime == "R2_technical"]), ("R3 legal documents", T[T.regime == "R3_legal"])]
 factors = [("eta2_strategy", "Chunking strategy", C[0], "////"), ("eta2_chunk_size", "Chunk size", C[3], ""), ("eta2_model", "Embedding model", C[1], ""), ("eta2_corpus", "Corpus / dataset", C[2], ""), ("eta2_residual", "Residual", "#c3c2b7", "")]
 for ax, (title, df) in zip(axes, panels):
     df = df.set_index("metric").reindex(METRICS); left = np.zeros(len(METRICS)); y = np.arange(len(METRICS))[::-1]
@@ -59,7 +59,7 @@ if os.path.exists(p):
         vals = [r["fixed_mrr"], r["struct_noprefix_mrr"], r["struct_prefix_mrr"]]; labs = ["fixed-size\n(no prefix)", "structural\nno prefix", "structural\n+ prefix"]
         bars = ax.bar(labs, vals, color=[C[3], C[0], C[0]], hatch=["", "", "////"], edgecolor="white", width=0.6)
         for b, v in zip(bars, vals): ax.text(b.get_x() + b.get_width() / 2, v + 0.004, f"{v:.3f}", ha="center", fontsize=6.5, color=INK)
-        lo = min(vals) - 0.05; ax.set_ylim(max(0, lo), max(vals) + 0.03); ax.set_ylabel("MRR"); ax.set_title({"R2_technical": "R2 technical documents", "R3_legal_legalparser": "R3 legal contracts (legal-aware parser)"}.get(r["regime"], r["regime"]) + f" (n={int(r['n_pairs'])} paired cells)", fontsize=8, loc="left")
+        lo = min(vals) - 0.05; ax.set_ylim(max(0, lo), max(vals) + 0.03); ax.set_ylabel("MRR"); ax.set_title({"R2_technical": "R2 technical documents", "R3_legal_legalparser": "R3 legal documents (legal-aware parser)"}.get(r["regime"], r["regime"]) + f" (n={int(r['n_pairs'])} paired cells)", fontsize=8, loc="left")
         ax.grid(axis="y", color=GRID, linewidth=0.5); ax.set_axisbelow(True); ax.tick_params(length=0)
     fig.tight_layout(); fig.savefig(f"{FIGS}/fig_prefix_ablation.pdf", bbox_inches="tight"); plt.close(fig)
 print("figures written to", FIGS, os.listdir(FIGS))

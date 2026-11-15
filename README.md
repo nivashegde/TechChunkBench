@@ -11,6 +11,8 @@ The repository name (TechChunkBench) is historical: the 24-document technical co
 
 How much of the variance in RAG retrieval quality is attributable to the chunking strategy, relative to the embedding model, the chunk size, and the corpus itself? The conference paper answered this for general-purpose QA (Natural Questions, MS-MARCO): chunking strategy explains 1-2 % of variance and is not significant. The extension asks *when* chunking matters by repeating the balanced factorial on two further regimes.
 
+Summary of the extension's results: chunking strategy explains 4.5-8 % of pooled retrieval variance on technical documents (median 20 % within a document) and under 1 % on legal documents (median 8 % within a sub-benchmark); the strategy x corpus interaction exceeds the pooled main effect of strategy; heading density, not document length, is associated with a large chunking effect. `verify_review.py` recomputes every statistic quoted in the paper. Note: the strategy x regime figure printed by `mustdo_analyses.py` section B comes from a rank-deficient model and must not be used; the nested-model values in `verify_review.py` are the correct ones.
+
 | Regime | Corpora | Gold labels | Configs | Runner |
 |---|---|---|---|---|
 | R1 general QA (conference) | NQ dev, MS-MARCO dev | answer-span / qrels | 32 | conference pipeline |
