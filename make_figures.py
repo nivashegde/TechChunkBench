@@ -42,9 +42,11 @@ fig, ax = plt.subplots(figsize=(3.4, 2.6))
 style = {"R2_technical": (C[0], "o", "R2 technical"), "R3_legal": (C[1], "s", "R3 legal")}
 for reg, (color, mk, lab) in style.items():
     g = F[F.regime == reg]; ax.scatter(g["headings_per_10k"], g["eta2_strategy_mrr"] * 100, s=28, c=color, marker=mk, edgecolors="white", linewidths=0.6, label=lab, zorder=3)
+legal_off = {"privacy_qa": (6, 4), "cuad": (6, -1), "maud": (6, -7), "contractnli": (6, -4)}
 for _, r in F.iterrows():
     if r["eta2_strategy_mrr"] > 0.45 or r["headings_per_10k"] > 12 or r["regime"] == "R3_legal":
-        ax.annotate(r["corpus"], (r["headings_per_10k"], r["eta2_strategy_mrr"] * 100), xytext=(3, 2), textcoords="offset points", fontsize=5.5, color=INK2)
+        off = legal_off.get(r["corpus"], (3, 2))
+        ax.annotate(r["corpus"], (r["headings_per_10k"], r["eta2_strategy_mrr"] * 100), xytext=off, textcoords="offset points", fontsize=5.5, color=INK2)
 ax.set_xlabel("headings per 10k characters"); ax.set_ylabel("within-corpus $\\eta^2$ of strategy, MRR (%)")
 ax.grid(color=GRID, linewidth=0.5); ax.set_axisbelow(True); ax.legend(frameon=False, fontsize=7, loc="upper left")
 fig.tight_layout(); fig.savefig(f"{FIGS}/fig_heading_density.pdf", bbox_inches="tight"); plt.close(fig)
@@ -57,7 +59,7 @@ if os.path.exists(p):
         vals = [r["fixed_mrr"], r["struct_noprefix_mrr"], r["struct_prefix_mrr"]]; labs = ["fixed-size\n(no prefix)", "structural\nno prefix", "structural\n+ prefix"]
         bars = ax.bar(labs, vals, color=[C[3], C[0], C[0]], hatch=["", "", "////"], edgecolor="white", width=0.6)
         for b, v in zip(bars, vals): ax.text(b.get_x() + b.get_width() / 2, v + 0.004, f"{v:.3f}", ha="center", fontsize=6.5, color=INK)
-        lo = min(vals) - 0.05; ax.set_ylim(max(0, lo), max(vals) + 0.03); ax.set_ylabel("MRR"); ax.set_title(f"{r['regime'].replace('_', ' ')} (n={int(r['n_pairs'])} paired cells)", fontsize=8, loc="left")
+        lo = min(vals) - 0.05; ax.set_ylim(max(0, lo), max(vals) + 0.03); ax.set_ylabel("MRR"); ax.set_title({"R2_technical": "R2 technical documents", "R3_legal_legalparser": "R3 legal contracts (legal-aware parser)"}.get(r["regime"], r["regime"]) + f" (n={int(r['n_pairs'])} paired cells)", fontsize=8, loc="left")
         ax.grid(axis="y", color=GRID, linewidth=0.5); ax.set_axisbelow(True); ax.tick_params(length=0)
     fig.tight_layout(); fig.savefig(f"{FIGS}/fig_prefix_ablation.pdf", bbox_inches="tight"); plt.close(fig)
 print("figures written to", FIGS, os.listdir(FIGS))
